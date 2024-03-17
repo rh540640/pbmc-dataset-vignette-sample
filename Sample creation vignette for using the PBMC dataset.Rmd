@@ -1,0 +1,60 @@
+---
+title: "Sample creation vignette for using the PBMC dataset"
+author: "RICHARD"
+date: "2024-03-17"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This document provides an analysis of the **PBMC dataset** using `Seurat` package in R. We'll go through loading the dataset, initializing the `Seurat` object, performing quality control (QC) and visualization.
+
+```{r libraries, message=FALSE, warning=FALSE}
+library(dplyr)
+library(Seurat)
+library(patchwork)
+```
+
+## Load the PBMC Dataset
+
+```{r dataset}
+pbmc.data <- Read10X(data.dir = "C:\\Users\\richa\\Downloads\\filtered_gene_bc_matrices\\hg19")
+knitr::kable(head(pbmc.data))
+```
+
+## Initialize the Seurat Object with the raw data (non-normalized data)
+
+```{r object initialisation, warning=FALSE}
+pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
+
+```
+
+## Add QC Metrics to Metadata
+
+``` {r qc metrics}
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+```
+
+## Visualize QC Metrics
+
+```{r visualisation, warning=FALSE}
+VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+```
+
+## Feature-Feature Relationships
+
+```{r relationship}
+plot1 <- FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+plot1 + plot2
+```
+
+## Conclusion
+
+This document presented an analysis of the **PBMC dataset** using `Seurat` in R, including data loading, initialization of Seurat object, QC analysis, and visualization of feature-feature relationships.
